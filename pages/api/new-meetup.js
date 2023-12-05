@@ -3,14 +3,12 @@ import { MongoClient } from "mongodb";
 async function handler(req, res) {
   let client;
 
-  console.log("asdasdBURADAYIM");
-
   try {
     if (req.method === "POST") {
       const data = req.body;
 
       client = await MongoClient.connect(
-        "mongodb+srv://oykuparlak:LEHAYzLwCl1TJWot@cluster0.vmxa0mz.mongodb.net/meetups?retryWrites=true&w=majority"
+        "mongodb+srv://oykuparlak:a4UfQQzS0FB9zw0O@cluster0.vmxa0mz.mongodb.net/meetups?retryWrites=true&w=majority"
       );
 
       const db = client.db();

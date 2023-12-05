@@ -1,53 +1,65 @@
 import MeetupDetail from "../../components/meetups/MeetupDetail";
+import { MongoClient, ObjectId } from "mongodb";
 
-function MeetupDetails() {
+let client; 
+
+function MeetupDetails(props) {
   return (
     <>
       <MeetupDetail
-        image="https://upload.wikimedia.org/wikipedia/en/thumb/e/e2/IMG_Academy_Logo.svg/800px-IMG_Academy_Logo.svg.png"
-        title="A first meetup"
-        address="Adress sdfkdsljfkldsjfkdsjfjsdkflsdfk"
-        description="The meetup description"
+        image={props.meetupData.image}
+        title={props.meetupData.title}
+        address={props.meetupData.address}
+        description={props.meetupData.description}
       />
     </>
   );
 }
 
 export async function getStaticPaths() {
+  client = await MongoClient.connect(
+    "mongodb+srv://oykuparlak:a4UfQQzS0FB9zw0O@cluster0.vmxa0mz.mongodb.net/meetups?retryWrites=true&w=majority"
+  );
+
+  const db = client.db();
+  const meetupsCollection = db.collection("meetups");
+
+  const meetups = await meetupsCollection.find({}, { _id: 1 }).toArray();
+
+  client.close(); 
+
   return {
     fallback: false,
-    paths: [
-      {
-        params: {
-          meetupId: "m1",
-        },
-        params: {
-          meetupId: "m2",
-        },
-        params: {
-          meetupId: "m3",
-        },
+    paths: meetups.map((meetup) => ({
+      params: {
+        meetupId: meetup._id.toString(),
       },
-    ],
+    })),
   };
 }
 
 export async function getStaticProps(context) {
-  //
-
   const meetupId = context.params.meetupId;
+  client = await MongoClient.connect(
+    "mongodb+srv://oykuparlak:a4UfQQzS0FB9zw0O@cluster0.vmxa0mz.mongodb.net/meetups?retryWrites=true&w=majority"
+  );
 
-  console.log(meetupId);
+  const db = client.db();
+  const meetupsCollection = db.collection("meetups");
+
+  const selectedMeetup = await meetupsCollection.findOne({
+    _id: ObjectId(meetupId),
+  });
+
+  client.close(); 
+
   return {
     props: {
-      meetupData: {
-        id: meetupId,
-        title: "A first meetup",
-        address: "adres deneme deneme",
-        description: "The meetup description",
-        image:
-          "https://upload.wikimedia.org/wikipedia/en/thumb/e/e2/IMG_Academy_Logo.svg/800px-IMG_Academy_Logo.svg.png",
-      },
+      id: selectedMeetup._id.toString(),
+      title: selectedMeetup.title,
+      address: selectedMeetup.address,
+      image: selectedMeetup.image,
+      description: selectedMeetup.description,
     },
   };
 }
