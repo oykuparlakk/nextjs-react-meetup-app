@@ -3,11 +3,11 @@ import Card from "../ui/Card";
 import classes from "./MeetupItem.module.css";
 
 function MeetupItem(props) {
+  console.log(props);
   const router = useRouter();
 
   function showDetailsHandler() {
-    console.log("buradayaım")
-    router.push("/" + props.id);
+    router.push('/meetups/[meetupId]', `/meetups/${props.id}`);
   }
 
   return (
